@@ -10,6 +10,11 @@ fi
 
 set -e
 
+#
+# Start DNS Lightweight service
+#
+dnsmasq
+
 cd $OPENVPN
 
 # Build runtime arguments array based on environment

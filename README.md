@@ -1,19 +1,14 @@
 # OpenVPN for Docker
 
 [![Build Status](https://travis-ci.org/dlinten/docker-openvpn.svg)](https://travis-ci.org/dlinten/docker-openvpn)
-[![Docker Stars](https://img.shields.io/docker/stars/dlinten/openvpn.svg)](https://hub.docker.com/r/dlinten/openvpn/)
-[![Docker Pulls](https://img.shields.io/docker/pulls/dlinten/openvpn.svg)](https://hub.docker.com/r/dlinten/openvpn/)
-[![ImageLayers](https://images.microbadger.com/badges/image/dlinten/openvpn.svg)](https://microbadger.com/#/images/dlinten/openvpn)
+[![Docker Stars](https://img.shields.io/docker/stars/dlinten/docker-openvpn.svg)](https://hub.docker.com/r/dlinten/docker-openvpn/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/dlinten/docker-openvpn.svg)](https://hub.docker.com/r/dlinten/docker-openvpn/)
+[![ImageLayers](https://images.microbadger.com/badges/image/dlinten/docker-openvpn.svg)](https://microbadger.com/#/images/dlinten/docker-openvpn)
 
-
-OpenVPN server in a Docker container complete with an EasyRSA PKI CA.
-
-Extensively tested on [Digital Ocean $5/mo node](http://bit.ly/1C7cKr3) and has
-a corresponding [Digital Ocean Community Tutorial](http://bit.ly/1AGUZkq).
 
 #### Upstream Links
 
-* Docker Registry @ [dlinten/openvpn](https://hub.docker.com/r/dlinten/openvpn/)
+* Docker Registry @ [dlinten/docker-openvpn](https://hub.docker.com/r/dlinten/docker-openvpn/)
 * GitHub @ [dlinten/docker-openvpn](https://github.com/dlinten/docker-openvpn)
 
 ## Quick Start
@@ -25,20 +20,20 @@ a corresponding [Digital Ocean Community Tutorial](http://bit.ly/1AGUZkq).
 * Initialize the `$OVPN_DATA` container that will hold the configuration files and certificates
 
         docker volume create --name $OVPN_DATA
-        docker run -v $OVPN_DATA:/etc/openvpn --rm dlinten/openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM
-        docker run -v $OVPN_DATA:/etc/openvpn --rm -it dlinten/openvpn ovpn_initpki
+        docker run -v $OVPN_DATA:/etc/openvpn --rm dlinten/docker-openvpn ovpn_genconfig -u udp://VPN.SERVERNAME.COM
+        docker run -v $OVPN_DATA:/etc/openvpn --rm -it dlinten/docker-openvpn ovpn_initpki
 
 * Start OpenVPN server process
 
-        docker run -v $OVPN_DATA:/etc/openvpn -d -p 1194:1194/udp --cap-add=NET_ADMIN dlinten/openvpn
+        docker run -v $OVPN_DATA:/etc/openvpn -d -p 1194:1194/udp --cap-add=NET_ADMIN dlinten/docker-openvpn
 
 * Generate a client certificate without a passphrase
 
-        docker run -v $OVPN_DATA:/etc/openvpn --rm -it dlinten/openvpn easyrsa build-client-full CLIENTNAME nopass
+        docker run -v $OVPN_DATA:/etc/openvpn --rm -it dlinten/docker-openvpn easyrsa build-client-full CLIENTNAME nopass
 
 * Retrieve the client configuration with embedded certificates
 
-        docker run -v $OVPN_DATA:/etc/openvpn --rm dlinten/openvpn ovpn_getclient CLIENTNAME > CLIENTNAME.ovpn
+        docker run -v $OVPN_DATA:/etc/openvpn --rm dlinten/docker-openvpn ovpn_getclient CLIENTNAME > CLIENTNAME.ovpn
 
 ## Docker Compose
 
@@ -48,7 +43,7 @@ If you prefer to use `docker-compose` please refer to the [documentation](docs/d
 
 * Create an environment variable with the name DEBUG and value of 1 to enable debug output (using "docker -e").
 
-        docker run -v $OVPN_DATA:/etc/openvpn -p 1194:1194/udp --privileged -e DEBUG=1 dlinten/openvpn
+        docker run -v $OVPN_DATA:/etc/openvpn -p 1194:1194/udp --privileged -e DEBUG=1 dlinten/docker-openvpn
 
 * Test using a client that has openvpn installed correctly
 
@@ -66,7 +61,7 @@ If you prefer to use `docker-compose` please refer to the [documentation](docs/d
 
 ## How Does It Work?
 
-Initialize the volume container using the `dlinten/openvpn` image with the
+Initialize the volume container using the `dlinten/docker-openvpn` image with the
 included scripts to automatically generate:
 
 - Diffie-Hellman parameters
@@ -82,11 +77,11 @@ declares that directory as a volume. It means that you can start another
 container with the `-v` argument, and access the configuration.
 The volume also holds the PKI keys and certs so that it could be backed up.
 
-To generate a client certificate, `dlinten/openvpn` uses EasyRSA via the
+To generate a client certificate, `dlinten/docker-openvpn` uses EasyRSA via the
 `easyrsa` command in the container's path.  The `EASYRSA_*` environmental
 variables place the PKI CA under `/etc/openvpn/pki`.
 
-Conveniently, `dlinten/openvpn` comes with a script called `ovpn_getclient`,
+Conveniently, `dlinten/docker-openvpn` comes with a script called `ovpn_getclient`,
 which dumps an inline OpenVPN client configuration file.  This single file can
 then be given to a client for access to the VPN.
 
@@ -152,7 +147,7 @@ OpenVPN with latest OpenSSL on Ubuntu 12.04 LTS).
 ### It Doesn't Stomp All Over the Server's Filesystem
 
 Everything for the Docker container is contained in two images: the ephemeral
-run time image (dlinten/openvpn) and the `$OVPN_DATA` data volume. To remove
+run time image (dlinten/docker-openvpn) and the `$OVPN_DATA` data volume. To remove
 it, remove the corresponding containers, `$OVPN_DATA` data volume and Docker
 image and it's completely removed.  This also makes it easier to run multiple
 servers since each lives in the bubble of the container (of course multiple IPs
@@ -177,8 +172,9 @@ of a guarantee in the future.
 ## Originally Tested On
 
 * Docker hosts:
-  * server a [Digital Ocean](https://www.digitalocean.com/?refcode=d19f7fe88c94) Droplet with 512 MB RAM running Ubuntu 14.04
+  * server a [Linode](https://www.linode.com/?r=0d326a9e7004075dc7cb8fc5f012df3e2051e3ba) VPS Host with 4096 MB RAM running Fedora 25
 * Clients
+  * Fedora 25 Workstation running standard network setup
   * Android App OpenVPN Connect 1.1.14 (built 56)
      * OpenVPN core 3.0 android armv7a thumb2 32-bit
   * OS X Mavericks with Tunnelblick 3.4beta26 (build 3828) using openvpn-2.3.4
